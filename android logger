@@ -1,0 +1,345 @@
+#importing necessary modules
+from ttkbootstrap import DateEntry,Style
+from tkinter import *
+# building gui using tkinter
+import openai
+from tkinter import messagebox
+import customtkinter
+import re
+from tkinter import font
+from random import choice
+root=Tk()
+root.iconbitmap(&#39;mail.ico&#39;)
+root.title(&#39;U-Mail&#39;)
+root.configure(bg=&quot;#fff&quot;)
+root.geometry(&#39;925x500+300+200&#39;)
+root.resizable(False,False)
+import pyrebase
+from pyrebase import initialize_app
+from tkinter import Listbox, Scrollbar, Text, END
+connecting with firease API here
+firebaseConfig={
+&#39;apiKey&#39;: &quot;AIzaSyDYq0qeh4RybLnazTrzCZ7_YQQvox8qpGY&quot;,
+&#39;authDomain&#39;: &quot;unitym-6607e.firebaseapp.com&quot;,
+&#39;databaseURL&#39;: &quot;https://unitym-6607e.firebaseio.com&quot;,
+&#39;projectId&#39;: &quot;unitym-6607e&quot;,
+&#39;storageBucket&#39;: &quot;unitym-6607e.appspot.com&quot;,
+&#39;messagingSenderId&#39;: &quot;136686396771&quot;,
+&#39;appId&#39;: &quot;1:136686396771:web:de5dee385a09b3a7bf1f56&quot;,
+&#39;measurementId&#39;: &quot;G-0VG8WD1D3T&quot;
+}
+#building the sliding panel here
+class SlidePanel(customtkinter.CTkFrame):
+def __init__(self, parent, start_pos, end_pos):
+super().__init__(master = parent)
+# general attributes
+self.start_pos = start_pos + 0.04
+self.end_pos = end_pos - 0.03
+self.width = abs(start_pos - end_pos)
+
+# animation logic
+self.pos = self.start_pos
+self.in_start_pos = True
+# layout
+self.place(relx = self.start_pos, rely = 0.05, relwidth = self.width, relheight = 0.9)
+def animate(self):
+if self.in_start_pos:
+self.animate_forward()
+else:
+self.animate_backwards()
+def animate_forward(self):
+if self.pos &gt; self.end_pos:
+self.pos -= 0.008
+self.place(relx = self.pos, rely = 0.05, relwidth = self.width, relheight = 0.9)
+self.after(10, self.animate_forward)
+else:
+self.in_start_pos = False
+self.after(10, self.animate_backwards)
+else:
+self.in_start_pos = True
+#building the custom window here for creating account
+def signup():
+def des(): #to delete the window
+frame1.destroy()
+frame2.destroy()
+frame1 = Frame(root,width=925,height=500,bg=&quot;white&quot;)
+frame1.place(x=0,y=0)
+bg=PhotoImage(file=&quot;img_2.png&quot;)
+#front page
+l1=customtkinter.CTkLabel(master=frame2,image=img2,bg_color=&quot;white&quot;,text=&quot;&quot;)
+l1.place(x=450,y=50)
+l2=Label(frame2,text=&quot;Create Account&quot;,bg=&quot;white&quot;,fg=&quot;#57a1f8&quot;,font=(&quot;open
+Sans&quot;,23,&#39;bold&#39;))
+l2.place(x=50,y=30)
+name=customtkinter.CTkEntry(master=frame2,placeholder_text=&quot;Name
+&quot;,width=200,border_color=&quot;white&quot;,border_width=0,bg_color=&quot;white&quot;)
+name.place(x=50,y=100)
+email=customtkinter.CTkEntry(master=frame2,placeholder_text=&quot;Username
+@unity.com&quot;,border_color=&quot;white&quot;,width=200,border_width=0,bg_color=&quot;white&quot;)
+email.place(x=50,y=150)
+pass1 = customtkinter.CTkEntry(master=frame2,
+placeholder_text=&quot;password&quot;,show=&quot;●&quot;,width=200,border_color=&quot;white&quot;, border_width=0,
+bg_color=&quot;white&quot;)
+
+pass1.place(x=50, y=200)
+pass2 = customtkinter.CTkEntry(master=frame2, placeholder_text=&quot;confirm
+password&quot;,show=&quot;●&quot;,width=200,border_color=&quot;white&quot;, border_width=0,
+bg_color=&quot;white&quot;)
+pass2.place(x=50, y=250)
+#_______________________________SUBMIT FUNCTION of Account
+Creation_______________________________________
+def submit():
+#Using ciphertext algorithm to check the password sstrength////UNITY////
+//Using Cipher TEXT HERE ………….
+//Checking the password strength here and selecting the strong password
+def pass_check(password):
+if len(password) &lt; 8:
+return False
+if not re.search(r&#39;[A-Z]&#39;, password):
+return False
+if not re.search(r&#39;[a-z]&#39;, password):
+return False
+if not re.search(r&#39;\d&#39;, password):
+return False
+if not re.search(r&#39;[!@#$%^&amp;*(),.?&quot;:{}|&lt;&gt;]&#39;, password):
+return False
+return True
+if str(name.get())==&quot;&quot;:
+l3.config(text=&quot;Please Enter Name&quot;)
+elif pass1.get()!=pass2.get():
+l3.config(text=&quot;Password do not match&quot;)
+elif &#39;@unity.com&#39; not in email.get():
+l3.config(text=&quot;please use @unity.com&quot;)
+elif not pass_check(pass1.get()):
+l3.config(text=&quot;please use strong password&quot;)
+else:
+
+#trying to connec with firebase
+
+try:
+
+#checking credentials here
+firebase = initialize_app(firebaseConfig)
+auth = firebase.auth()
+user = auth.create_user_with_email_and_password(email.get(),pass1.get())
+frame1.destroy()
+frame2.destroy()
+frame3=Frame(root,width=450,height=400,bg=&quot;white&quot;)
+frame3.place(x=480, y=70)
+head1=Label(frame3, text=&quot;Account Created&quot;,fg=&#39;#57a1f8&#39;, bg=&#39;white&#39;,
+font=(&#39;Microsoft YaHei UI Light&#39;, 23, &#39;bold&#39;))
+head1.place(x=40, y=5)
+bg1 = PhotoImage(file=&quot;Unity Mail.png&quot;)
+label2=customtkinter.CTkLabel(master=frame3,image=bg1,text=&quot; &quot;)
+label2.place(x=0, y=100)
+
+close=customtkinter.CTkButton(master=frame3,text=&quot;X&quot;,command=frame3.destroy,fg_color=&quot;re
+
+d&quot;,bg_color=&quot;white&quot;,width=3,height=17,font=(&quot;Open sans&quot;,10,&#39;bold&#39;))
+close.place(x=400,y=0)
+#signup=Button(frame3,text=&quot;Sign In&quot;,width=13,fg=&quot;#3e9eff&quot;,font=(&quot;Open
+Sans&quot;,13,&#39;bold&#39;))
+#signup.place(x=200,y=200)
+except:
+l3.config(text=&quot;Account already exist&quot;)
+#taking to the compose email page here
+next=customtkinter.CTkButton(master=frame2,text=&quot;Next&quot;,width=13,fg_color=&quot;#3e9eff&quot;,comm
+and=submit,font=(&quot;Open Sans&quot;,13,&#39;bold&#39;))
+next.place(x=120,y=300)
+l3=Label(frame2,text=&quot;&quot;,fg=&quot;red&quot;,bg=&quot;white&quot;,font=(&quot;arial&quot;,10),width=40,height=1)
+l3.place(x=90
+,y=350)
+b1=customtkinter.CTkButton(master=frame1,text=&quot;X&quot;,command=des,fg_color=&quot;red&quot;,bg_color=&quot;
+#7171ff&quot;,width=3,height=17,font=(&quot;Open sans&quot;,10,&#39;bold&#39;))
+b1.place(x=904,y=0)
+def login_1():
+firebase = initialize_app(firebaseConfig)
+auth=firebase.auth()
+e=str(user.get())
+p=str(code.get())
+user.delete(0,&#39;end&#39;)
+code.delete(0,&#39;end&#39;)
+def des1():
+frame4.destroy()
+label1.config(text=&quot;&quot;)
+def login_2():
+try:
+user=auth.sign_in_with_email_and_password(str(to_email.get()),&quot;&quot;)
+label2.config(text=&quot;Valid account&quot;)
+except Exception as eror:
+
+#checking for password credentials here
+if &quot;MISSING_PASSWORD&quot; in str(eror):
+firebaseConfig1={
+&#39;apiKey&#39;: &quot;skdsjdlsjdlh4RybLnazTrzCZ7_YQQvox8qpGY&quot;,
+&#39;authDomain&#39;: &quot;unitym-k3;32k;.firebaseapp.com&quot;,
+&#39;databaseURL&#39;: &quot;https://unitym-6607e-default-rtdb.firebaseio.com/&quot;,
+&#39;projectId&#39;: &quot;unitym-wlekw;e&quot;,
+&#39;storageBucket&#39;: &quot;unitym-6607e.appspot.com&quot;,
+&#39;messagingSenderId&#39;: &quot;9318028120&quot;,
+&#39;appId&#39;: &quot;1:136686396771:web:ldfldjfdfjdfjl&quot;,
+&#39;measurementId&#39;: &quot;G-2392VG8WD1D3T&quot;
+}
+firebase1=pyrebase.initialize_app(firebaseConfig1)
+db=firebase1.database()
+
+import datetime
+today = datetime.date.today()
+d1 = today.strftime(&quot;%d/%m/%Y&quot;)
+
+label2.config(text=&quot;Successfully Sent&quot;)
+data={&quot;sender&quot;:str(e),&quot;reciever&quot;:str(to_email.get()),&quot;subject&quot;:str(sub.get()),&quot;msg&quot;:msg.get(1.0,EN
+D),&quot;date&quot;:d1,&quot;time&quot;:datetime.datetime.now().strftime(&quot;%H:%M:%S&quot;)}
+db.push(data)
+to_email.delete(0, &#39;end&#39;)
+sub.delete(0, &#39;end&#39;)
+msg.delete(1.0, &#39;end&#39;)
+else:
+to_email.delete(0,&#39;end&#39;)
+label2.config(text=&quot;Invalid Account&quot;)
+try:
+# Add menu items (you can customize this)
+auth.sign_in_with_email_and_password(e,p)
+frame4=Frame(root,width=600,height=600,bg=&quot;#FFF8DC&quot;)
+frame4.place(x=480,y=0)
+animated_panel=SlidePanel(root,1.0,0.1)
+img2=PhotoImage(file=&quot;img_13.png&quot;)
+l1=customtkinter.CTkLabel(master=animated_panel,image=img2,text=&quot; &quot;)
+l1.pack()
+#EMAIL READER ________________________________________________
+close1 = customtkinter.CTkButton(master=l1,text=&quot;X&quot;, command=animated_panel.animate,
+fg_color=&quot;red&quot;, bg_color=&quot;#FFF8DC&quot;,
+width=3, height=17, font=(&quot;Open sans&quot;, 10, &#39;bold&#39;))
+close1.place(x=810,y=0)
+emails = [
+{&quot;subject&quot;: &quot;Email 1&quot;, &quot;date&quot;: &quot;2023-09-20&quot;, &quot;content&quot;: &quot;This is the content of email 1&quot;},
+{&quot;subject&quot;: &quot;Email 2&quot;, &quot;date&quot;: &quot;2023-09-21&quot;, &quot;content&quot;: &quot;This is the content of email 2&quot;},
+{&quot;subject&quot;: &quot;Email 3&quot;, &quot;date&quot;: &quot;2023-09-22&quot;, &quot;content&quot;: &quot;This is the content of email 3&quot;},
+]
+def show_email(event):
+selected_index = email_listbox.curselection()
+if selected_index:
+index = selected_index[0]
+email = emails[index]
+email_content.config(state=NORMAL) # Enable text widget for editing
+email_content.delete(&quot;1.0&quot;, END) # Clear existing content
+email_content.insert(END, f&quot;Subject: {email[&#39;subject&#39;]}\n&quot;)
+email_content.insert(END, f&quot;Date: {email[&#39;date&#39;]}\n\n&quot;)
+email_content.insert(END, email[&#39;content&#39;])
+email_content.config(state=DISABLED) # Disable text widget for editing
+
+# Create a frame to hold the listbox and email content
+# Create a listbox for email subjects and dates
+email_listbox =
+
+# Create a text widget for email content
+&quot;&quot;&quot;Listbox insertion is done here&quot;&quot;&quot;
+#READER ENDS ____________________________________________________
+mail=Button(frame4,width=10,pady=2,text=&#39;Inbox&#39;,bg=&quot;#57a1f8&quot;,fg=&#39;white&#39;,border=0,command
+=animated_panel.animate)
+mail.place(x=220,y=465)
+def show_context_menu(event):
+context_menu.post(event.x_root, event.y_root)
+fontStyle = &#39;Microsoft YaHei&#39;
+fontSize = &#39;10&#39;
+def bold():
+text_property = font.Font(font=msg[&#39;font&#39;])
+selection = msg.tag_ranges(SEL)
+if selection:
+current_tags = msg.tag_names(&quot;sel.first&quot;)
+msg.tag_configure(&#39;bold&#39;, font=(fontStyle, fontSize, &#39;bold&#39;))
+if &#39;bold&#39; in current_tags:
+msg.tag_remove(&#39;bold&#39;, &quot;sel.first&quot;, &quot;sel.last&quot;)
+else:
+msg.tag_add(&#39;bold&#39;, &quot;sel.first&quot;, &quot;sel.last&quot;)
+def italic_it():
+#italics_font = font.Font(msg, msg.cget(&quot;font&quot;))
+#italics_font.configure(slant=&quot;italic&quot;)
+#msg.tag_configure(&quot;italic&quot;, font=italics_font)
+#current_tags = msg.tag_names(&quot;sel.first&quot;)
+if &#39;bold&#39; in current_tags:
+msg.tag_add(&#39;italic&#39;, &quot;sel.first&quot;, &quot;sel.last&quot;)
+msg.tag_add(&#39;bold&#39;, &quot;sel.first&quot;, &quot;sel.last&quot;)
+else:
+msg.tag_remove(&#39;italic&#39;, &quot;sel.first&quot;, &quot;sel.last&quot;)
+def ai():
+openai.api_key=&quot;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&quot;
+user_message=msg.get(1.0,END)
+chat=({&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;convert this message into formal and decent language and
+remove all grametical and logical errors and only write the output message in same word length
+of the message = &quot; +str(user_message)})
+response=openai.ChatCompletion.create(
+model=&quot;gpt-3.5-turbo&quot;,
+
+messgae=chat
+)
+assitant=response[&#39;choices&#39;][0][&#39;message&#39;][&#39;content&#39;]
+msg.delete(1.0,END)
+msg.insert(1.0,assitant.strip(&quot;\n&quot;).strip())
+
+context_menu =Menu(frame4, tearoff=0)
+context_menu.add_command(label=&quot;Ask AI&quot;,command=ai)
+context_menu.add_command(label=&quot;Bold&quot;,command=bold)
+context_menu.add_command(label=&quot;Italics&quot;,command=italic_it)
+context_menu.add_command(label=&quot;Underline&quot;)
+context_menu.add_command(label=&quot;Bullets&quot;)
+context_menu.add_command(label=&quot;Spell&quot;)
+context_menu.add_separator()
+context_menu.add_command(label=&quot;Exit&quot;)
+# Bind the context menu to the right-click event
+head3 = Label(frame4,text=&quot;Compose Email&quot;,fg=&#39;#57a1f8&#39;,bg=&#39;#FFF8DC&#39;,font=(&#39;Microsoft
+YaHei UI&#39;,23))
+head3.place(x=80,y=5)
+#taking login input here
+to_email =
+customtkinter.CTkEntry(master=frame4,width=330,placeholder_text=&quot;To:&quot;,font=(&#39;Open Sans&#39;,
+13),
+border_color=&quot;#FFF8DC&quot;,bg_color=&quot;white&quot;)
+to_email.place(x=40, y=80)
+Frame(frame4,width=320,height=2,bg=&quot;black&quot;).place(x=45,y=107)
+sub = customtkinter.CTkEntry(master=frame4, width=330,placeholder_text=&quot;Subject:&quot;,
+font=(&#39;Open Sans&#39;, 13,&#39;bold&#39;),border_color=&quot;#FFF8DC&quot;,bg_color=&quot;white&quot;)
+sub.place(x=40,y=120)
+Frame(frame4, width=320,height=2, bg=&quot;black&quot;).place(x=45, y=147)
+msg=Text(frame4,bg=&quot;white&quot;,font=(&#39;Microsoft YaHei
+UI&#39;,10),width=42,height=14,undo=True)
+msg.place(x=43,y=170)
+Button(frame4,width=10,pady=2,text=&#39;Send&#39;,bg=&quot;#57a1f8&quot;,fg=&#39;white&#39;, border=0,
+command=lambda:[login_1(),login_2()]).place(x=310,y=465)
+label2=Label(frame4,text=&quot;&quot;,fg=&quot;red&quot;,bg=&quot;#FFF8DC&quot;,font=(&quot;arial&quot;,10),width=20,height=1)
+label2.place(x=10,y=450)
+msg.bind(&quot;&lt;Button-3&gt;&quot;, show_context_menu)
+close=customtkinter.CTkButton(master=frame4,text=&quot;X&quot;,command=des1,fg_color=&quot;red&quot;,bg_col
+or=&quot;#FFF8DC&quot;,width=3,height=17,font=(&quot;Open sans&quot;,10,&#39;bold&#39;))
+close.place(x=425,y=0)
+except:
+label1.config(text=&quot;Invalid Credentials&quot;)
+img=PhotoImage(file=&quot;login.png&quot;)
+Label(root,image=img,bg=&quot;white&quot;).place(x=50,y=50)
+frame=Frame(root,width=350,height=350,bg=&quot;white&quot;)
+frame.place(x=480,y=70)
+
+head=Label(frame,text=&quot;Sign in&quot;,fg=&#39;#57a1f8&#39;,bg=&#39;white&#39;,font=(&#39;Microsoft YaHei UI
+Light&#39;,23,&#39;bold&#39;))
+head.place(x=100,y=5)
+user=customtkinter.CTkEntry(master=frame,width=300,placeholder_text=&quot;Username&quot;,font=(&#39;Op
+en Sans&#39;,13),border_color=&quot;white&quot;,bg_color=&quot;white&quot;)
+user.place(x=38,y=80)
+
+Frame(frame,width=295,height=2,bg=&quot;black&quot;).place(x=45,y=107)
+code=customtkinter.CTkEntry(master=frame,width=300,placeholder_text=&quot;Password&quot;,show=&quot;●&quot;
+,font=(&#39;Open Sans&#39;,13),border_color=&quot;white&quot;,bg_color=&quot;white&quot;)
+code.place(x=38,y=150)
+Frame(frame,width=295,height=2,bg=&quot;black&quot;).place(x=45,y=177)
+Button(frame,width=39,pady=7,text=&#39;Sign
+in&#39;,bg=&quot;#57a1f8&quot;,fg=&#39;white&#39;,border=0,command=login_1).place(x=53,y=204)
+label=Label(frame,width=39,pady=7,text=&quot;Don&#39;t have an
+account?&quot;,fg=&quot;black&quot;,bg=&quot;white&quot;,font=(&quot;Microsoft YaHei UI Light&quot;,9))
+label.place(x=10,y=260)
+label1=Label(frame,text=&quot;&quot;,fg=&quot;red&quot;,bg=&quot;white&quot;,font=(&quot;arial&quot;,10),width=40,height=1)
+label1.place(x=0,y=320)
+sign_up=Button(frame,width=6,text=&quot;Sign
+up&quot;,border=0,bg=&quot;white&quot;,cursor=&quot;hand2&quot;,fg=&#39;#57a1f8&#39;,command=signup)
+sign_up.place(x=215,y=266)
+root.mainloop()
+#check read is left now
